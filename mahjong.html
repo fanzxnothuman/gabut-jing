@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PGSoft Slot KW - FanzxThunder Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at center, #141414, #0b0c10);
+      font-family: 'Luckiest Guy', cursive;
+      color: white;
+      overflow: hidden;
+    }
+
+    .slot-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: gold;
+      text-shadow: 0 0 10px gold;
+      margin-bottom: 20px;
+    }
+
+    .slot-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 80px);
+      grid-template-rows: repeat(3, 80px);
+      gap: 10px;
+      background: #222;
+      padding: 15px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    }
+
+    .slot-tile {
+      background: #333;
+      border-radius: 12px;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 5px #000, 0 0 10px #0ff;
+      transition: transform 0.2s;
+    }
+
+    .tile-glow {
+      animation: glow 0.6s ease-in-out infinite alternate;
+    }
+
+    .tile-spin {
+      animation: spinTile 0.3s ease-in-out;
+    }
+
+    @keyframes glow {
+      from { transform: scale(1); box-shadow: 0 0 10px #0ff; }
+      to { transform: scale(1.1); box-shadow: 0 0 20px #0ff; }
+    }
+
+    @keyframes spinTile {
+      0% { transform: scale(1) rotateX(0deg); opacity: 1; }
+      50% { transform: scale(0.6) rotateX(90deg); opacity: 0.5; }
+      100% { transform: scale(1) rotateX(0deg); opacity: 1; }
+    }
+
+    .spin-btn {
+      margin-top: 30px;
+      padding: 15px 40px;
+      font-size: 1.5rem;
+      background: gold;
+      color: #000;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 0 10px gold;
+    }
+
+    .balance {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #0ff;
+    }
+
+    .jackpot {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      color: gold;
+      text-shadow: 0 0 20px gold;
+      opacity: 0;
+      animation: none;
+    }
+
+    @keyframes showJackpot {
+      0% {opacity: 0; transform: translateX(-50%) scale(0.8);}
+      30% {opacity: 1; transform: translateX(-50%) scale(1.2);}
+      60% {opacity: 1; transform: translateX(-50%) scale(1);}
+      100% {opacity: 0; transform: translateX(-50%) scale(0.8);}
+    }
+  </style>
+</head>
+<body>
+<div class="slot-container">
+  <h1>Halo Anjing, Gas Nyelot Di BOA888 Jamin Rungkad Awokwok</h1>
+  <h1>🎰 Boa Slot 888</h1>
+  <div class="slot-grid" id="grid"></div>
+  <button class="spin-btn" onclick="spin()">SPIN</button>
+  <div class="balance" id="balance">saldo lu: 💰 100</div>
+</div>
+<div class="jackpot" id="jackpot">💥 JACKPOT! 💥</div>
+<audio id="sound-spin" src="https://orangefreesounds.com/wp-content/uploads/2025/05/Mahjong-tiles-sound-effect.mp3"></audio>
+<audio id="sound-match" src="https://orangefreesounds.com/wp-content/uploads/2025/05/Mahjong-tile-match-or-placement-sound.mp3"></audio>
+<audio id="sound-win" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-notification-2018.mp3"></audio>
+<audio id="sound-zonk" src="https://assets.mixkit.co/sfx/preview/mixkit-losing-bleeps-2026.mp3"></audio>
+<audio id="bg-music" src="https://vgmsite.com/soundtracks/mahjong-fight-club-original-soundtrack/ufhjqrdj/101%20-%20Mahjong%20Fight%20Club.mp3" loop autoplay></audio>
+<script>
+const grid = document.getElementById("grid");
+const jackpot = document.getElementById("jackpot");
+balanceText = document.getElementById("balance");
+let balance = 100;
+const cost = 10;
+const reward = 40;
+const symbols = ['🍒','🍋','🔔','💎','7️⃣','🀄'];
+const spinSound = document.getElementById("sound-spin");
+const matchSound = document.getElementById("sound-match");
+const winSound = document.getElementById("sound-win");
+const zonkSound = document.getElementById("sound-zonk");
+const bgMusic = document.getElementById("bg-music");
+let tiles = [];
+
+bgMusic.volume = 0.4;
+bgMusic.play().catch(() => {});
+
+function createGrid() {
+  grid.innerHTML = '';
+  tiles = [];
+  for (let i = 0; i < 15; i++) {
+    const div = document.createElement('div');
+    div.className = 'slot-tile';
+    div.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    grid.appendChild(div);
+    tiles.push(div);
+  }
+}
+
+function getTile(r, c) {
+  return tiles[r * 5 + c];
+}
+
+function checkMatch() {
+  let matches = [];
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      let a = getTile(r, c);
+      let b = getTile(r, c + 1);
+      let cT = getTile(r, c + 2);
+      if (a.textContent === b.textContent && b.textContent === cT.textContent) {
+        matches.push(a, b, cT);
+      }
+    }
+  }
+  return [...new Set(matches)];
+}
+
+function updateBalance() {
+  balanceText.textContent = `Saldo Lu: 💰 ${Math.round(balance)}`;
+}
+
+function showJackpot() {
+  jackpot.style.animation = 'showJackpot 2s ease';
+  jackpot.style.opacity = 1;
+  setTimeout(() => {
+    jackpot.style.animation = 'none';
+    jackpot.style.opacity = 0;
+  }, 2000);
+}
+
+function spin() {
+  if (balance < cost) return alert("💀 Saldo Lu Abis, Dan lu Sekarang Miskin Awokawok");
+  spinSound.currentTime = 0; spinSound.play();
+  balance -= cost; updateBalance();
+
+  for (let i = 0; i < tiles.length; i++) {
+    tiles[i].classList.remove('tile-glow');
+    tiles[i].classList.add('tile-spin');
+    setTimeout(() => {
+      tiles[i].textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      tiles[i].classList.remove('tile-spin');
+    }, 300);
+  }
+
+  setTimeout(() => {
+    const matched = checkMatch();
+    if (matched.length > 0) {
+      matched.forEach(t => t.classList.add('tile-glow'));
+      matchSound.currentTime = 0; matchSound.play();
+      winSound.currentTime = 0; winSound.play();
+      showJackpot();
+      balance += reward;
+      updateBalance();
+    } else {
+      zonkSound.currentTime = 0; zonkSound.play();
+    }
+  }, 500);
+}
+
+createGrid();
+updateBalance();
+</script>
+</body>
+</html>
