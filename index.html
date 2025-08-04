@@ -29,6 +29,7 @@
       color: gold;
       text-shadow: 0 0 10px gold;
       margin-bottom: 20px;
+      text-align: center;
     }
 
     .slot-grid {
@@ -96,8 +97,8 @@
       left: 50%;
       transform: translateX(-50%);
       font-size: 3rem;
-      color: gold;
-      text-shadow: 0 0 20px gold;
+      color: red;
+      text-shadow: 0 0 20px red;
       opacity: 0;
       animation: none;
     }
@@ -118,20 +119,24 @@
   <button class="spin-btn" onclick="spin()">SPIN</button>
   <div class="balance" id="balance">saldo lu: 💰 100</div>
 </div>
-<div class="jackpot" id="jackpot">💥 JACKPOT! 💥</div>
-<audio id="sound-spin" src="https://orangefreesounds.com/wp-content/uploads/2025/05/Mahjong-tiles-sound-effect.mp3"></audio>
-<audio id="sound-match" src="https://orangefreesounds.com/wp-content/uploads/2025/05/Mahjong-tile-match-or-placement-sound.mp3"></audio>
-<audio id="sound-win" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-notification-2018.mp3"></audio>
-<audio id="sound-zonk" src="https://assets.mixkit.co/sfx/preview/mixkit-losing-bleeps-2026.mp3"></audio>
-<audio id="bg-music" src="https://vgmsite.com/soundtracks/mahjong-fight-club-original-soundtrack/ufhjqrdj/101%20-%20Mahjong%20Fight%20Club.mp3" loop autoplay></audio>
+<div class="jackpot" id="jackpot">💥DUAR💥</div>
+
+<!-- 🎵 Sound Effects -->
+<audio id="sound-spin" src="https://files.catbox.moe/2ke3.mp3"></audio>
+<audio id="sound-match" src="https://files.catbox.moe/c5o1bp.mp3"></audio>
+<audio id="sound-win" src="https://files.catbox.moe/6524i3.mp3"></audio>
+<audio id="sound-zonk" src="https://files.catbox.moe/iy2ke3.mp3"></audio>
+<audio id="bg-music" src="https://files.catbox.moe/a2qs43.mp3" loop></audio>
+
 <script>
 const grid = document.getElementById("grid");
 const jackpot = document.getElementById("jackpot");
-balanceText = document.getElementById("balance");
+const balanceText = document.getElementById("balance");
 let balance = 100;
 const cost = 10;
 const reward = 40;
 const symbols = ['🍒','🍋','🔔','💎','7️⃣','🀄'];
+
 const spinSound = document.getElementById("sound-spin");
 const matchSound = document.getElementById("sound-match");
 const winSound = document.getElementById("sound-win");
@@ -140,7 +145,6 @@ const bgMusic = document.getElementById("bg-music");
 let tiles = [];
 
 bgMusic.volume = 0.4;
-bgMusic.play().catch(() => {});
 
 function createGrid() {
   grid.innerHTML = '';
@@ -217,6 +221,13 @@ function spin() {
 
 createGrid();
 updateBalance();
+
+// 🔊 Enable autoplay after user click
+document.addEventListener('click', () => {
+  if (bgMusic.paused) {
+    bgMusic.play().catch(() => {});
+  }
+}, { once: true });
 </script>
 </body>
 </html>
